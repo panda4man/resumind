@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('interviews', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->index();
             $table->foreignId('job_application_id')->constrained()->cascadeOnDelete();
             $table->dateTime('interview_date')->nullable();
             $table->string('type'); // What the interview was (e.g. Technical, Panel, CEO Chat)

@@ -19,14 +19,19 @@ class JobApplication extends Model
         'submitted_at' => 'datetime',
         'responded_at' => 'datetime',
     ];
-
-    public function resume(): BelongsTo
+    
+    public function interviews(): HasMany
     {
-        return $this->belongsTo(Resume::class);
+        return $this->hasMany(Interview::class);
     }
 
     public function questions(): HasMany
     {
         return $this->hasMany(ApplicationQuestion::class);
+    }
+    
+    public function resume(): BelongsTo
+    {
+        return $this->belongsTo(Resume::class);
     }
 }
