@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ResumeResource extends Resource
 {
@@ -44,7 +45,7 @@ class ResumeResource extends Resource
                     ->label('File')
                     ->limit(30)
                     ->copyable(),
-                TextColumn::make('jobApplications_count')
+                TextColumn::make('job_applications_count')
                     ->label('Applications Used In')
                     ->counts('jobApplications')
                     ->sortable(),
@@ -78,5 +79,11 @@ class ResumeResource extends Resource
             'create' => Pages\CreateResume::route('/create'),
             'edit' => Pages\EditResume::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('jobApplications');
     }
 }

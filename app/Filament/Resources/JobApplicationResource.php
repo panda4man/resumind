@@ -6,7 +6,7 @@ use App\Enums\JobApplicationStatusesEnum;
 use App\Filament\Resources\JobApplicationResource\Pages;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\InterviewsRelationManager;
 use App\Models\JobApplication;
-use Filament\Forms;
+use Filament\Forms\Components;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,20 +23,20 @@ class JobApplicationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('resume_id')
+                Components\Select::make('resume_id')
                     ->relationship('resume', 'name')
                     ->searchable()
                     ->label('Resume'),
 
-                Forms\Components\TextInput::make('company_name')
+                Components\TextInput::make('company_name')
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('job_title')
+                Components\TextInput::make('job_title')
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\Select::make('status')
+                Components\Select::make('status')
                     ->options([
                         JobApplicationStatusesEnum::Applied->value => JobApplicationStatusesEnum::Applied->name,
                         JobApplicationStatusesEnum::Interviewing->value => JobApplicationStatusesEnum::Interviewing->name,
@@ -46,8 +46,9 @@ class JobApplicationResource extends Resource
                     ])
                     ->required(),
 
-                Forms\Components\DatePicker::make('submitted_at'),
-                Forms\Components\DatePicker::make('responded_at'),
+                Components\DatePicker::make('submitted_at'),
+                Components\DatePicker::make('responded_at'),
+                Components\Textarea::make('job_description')
             ]);
     }
 
