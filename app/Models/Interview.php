@@ -13,6 +13,7 @@ class Interview extends Model
     use HasFactory;
 
     protected $fillable = [
+        'job_application_id',
         'name',
         'interview_date',
         'type', // e.g. Technical, Panel, CEO Chat
