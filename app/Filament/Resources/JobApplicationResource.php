@@ -33,7 +33,6 @@ class JobApplicationResource extends Resource
                     ->maxLength(255),
 
                 Components\TextInput::make('job_title')
-                    ->required()
                     ->maxLength(255),
 
                 Components\Select::make('status')
@@ -48,7 +47,26 @@ class JobApplicationResource extends Resource
 
                 Components\DatePicker::make('submitted_at'),
                 Components\DatePicker::make('responded_at'),
-                Components\Textarea::make('job_description')
+                Components\Textarea::make('job_description'),
+
+                Components\Section::make('Details')
+                    ->columns(2)
+                    ->schema([
+                        Components\Toggle::make('preferred'),
+                        Components\Toggle::make('remote'),
+                        Components\TextInput::make('salary_lower')
+                            ->numeric()->prefix('$')->suffix('k'),
+                        Components\TextInput::make('salary_upper')
+                            ->numeric()->prefix('$')->suffix('k'),
+                        Components\TextInput::make('website')
+                            ->url()->maxLength(255),
+                        Components\TextInput::make('glassdoor')
+                            ->url()->maxLength(255),
+                        Components\TextInput::make('stack')
+                            ->maxLength(255),
+                        Components\TextInput::make('source')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 
@@ -62,9 +80,30 @@ class JobApplicationResource extends Resource
                 TextColumn::make('submitted_at')->date(),
                 TextColumn::make('responded_at')->date(),
                 TextColumn::make('resume.name')->label('Resume'),
+                Tables\Columns\IconColumn::make('preferred')->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('remote')->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('source')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('stack')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('salary_lower')
+                    ->formatStateUsing(fn ($state) => $state ? "\${$state}k" : null)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('salary_upper')
+                    ->formatStateUsing(fn ($state) => $state ? "\${$state}k" : null)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        JobApplicationStatusesEnum::Applied->value => JobApplicationStatusesEnum::Applied->name,
+                        JobApplicationStatusesEnum::Interviewing->value => JobApplicationStatusesEnum::Interviewing->name,
+                        JobApplicationStatusesEnum::Offer->value => JobApplicationStatusesEnum::Offer->name,
+                        JobApplicationStatusesEnum::Rejected->value => JobApplicationStatusesEnum::Rejected->name,
+                        JobApplicationStatusesEnum::Withdrawn->value => JobApplicationStatusesEnum::Withdrawn->name,
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -79,7 +118,7 @@ class JobApplicationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            InterviewsRelationManager::class
+            InterviewsRelationManager::class,
         ];
     }
 
