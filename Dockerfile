@@ -33,7 +33,8 @@ RUN composer run-script post-autoload-dump || true
 RUN git config --global --add safe.directory /var/www
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www \
+RUN mkdir -p /var/www/storage/logs /var/www/storage/framework/cache /var/www/storage/framework/sessions /var/www/storage/framework/views /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage /var/www/bootstrap/cache
 
 # Remove default nginx config
