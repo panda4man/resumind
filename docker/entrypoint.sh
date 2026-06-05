@@ -3,6 +3,14 @@ set -e
 
 cd /var/www
 
+# Ensure storage dirs exist (bind mount may be empty on first run)
+mkdir -p storage/logs \
+         storage/framework/cache/data \
+         storage/framework/sessions \
+         storage/framework/views \
+         bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+
 # Generate APP_KEY if not provided
 if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
