@@ -22,7 +22,7 @@ services:
       CACHE_STORE: database
       LOG_CHANNEL: stderr
     volumes:
-      - storage_data:/var/www/storage
+      - ./data/storage:/var/www/storage
     ports:
       - "${APP_PORT:-8080}:80"
     depends_on:
@@ -51,9 +51,6 @@ services:
       retries: 10
     networks:
       - resumind
-
-volumes:
-  storage_data:
 
 networks:
   resumind:
