@@ -11,6 +11,13 @@ mkdir -p storage/logs \
          bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 
+# Wait for DB TCP port to accept connections
+echo "Waiting for database..."
+until (echo > /dev/tcp/${DB_HOST:-db}/${DB_PORT:-3306}) 2>/dev/null; do
+    sleep 2
+done
+echo "Database ready."
+
 # Generate APP_KEY if not provided
 if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force
