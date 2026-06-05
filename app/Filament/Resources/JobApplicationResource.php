@@ -37,6 +37,7 @@ class JobApplicationResource extends Resource
 
                 Components\Select::make('status')
                     ->options([
+                        JobApplicationStatusesEnum::Prospecting->value => JobApplicationStatusesEnum::Prospecting->name,
                         JobApplicationStatusesEnum::Applied->value => JobApplicationStatusesEnum::Applied->name,
                         JobApplicationStatusesEnum::Interviewing->value => JobApplicationStatusesEnum::Interviewing->name,
                         JobApplicationStatusesEnum::Offer->value => JobApplicationStatusesEnum::Offer->name,
@@ -98,6 +99,7 @@ class JobApplicationResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
+                        JobApplicationStatusesEnum::Prospecting->value => JobApplicationStatusesEnum::Prospecting->name,
                         JobApplicationStatusesEnum::Applied->value => JobApplicationStatusesEnum::Applied->name,
                         JobApplicationStatusesEnum::Interviewing->value => JobApplicationStatusesEnum::Interviewing->name,
                         JobApplicationStatusesEnum::Offer->value => JobApplicationStatusesEnum::Offer->name,
