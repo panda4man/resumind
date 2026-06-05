@@ -77,8 +77,8 @@ class JobApplicationResource extends Resource
                 TextColumn::make('company_name')->searchable()->sortable(),
                 TextColumn::make('job_title')->searchable()->sortable(),
                 TextColumn::make('status')->badge(),
-                TextColumn::make('submitted_at')->date(),
-                TextColumn::make('responded_at')->date(),
+                TextColumn::make('submitted_at')->date()->sortable(),
+                TextColumn::make('responded_at')->date()->sortable(),
                 TextColumn::make('resume.name')->label('Resume'),
                 Tables\Columns\IconColumn::make('preferred')->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
