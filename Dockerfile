@@ -1,6 +1,6 @@
 FROM php:8.4-fpm
 
-# Install system dependencies + Node.js 22
+# Install system dependencies + Node.js 24
 RUN apt-get update && apt-get install -y \
     zip unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev libcurl4-openssl-dev \
     libicu-dev git supervisor nginx ca-certificates gnupg \
@@ -16,17 +16,21 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy application source
+# Copy only dependency manifests — cache composer layer until lock changes
+COPY composer.json composer.lock ./
+RUN composer install --optimize-autoloader --no-dev --no-interaction --no-scripts
+
+# Copy only JS manifests — cache npm layer until lock changes
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy full source and finalize build
 COPY . /var/www
+RUN npm run build && rm -rf node_modules
+RUN composer run-script post-autoload-dump || true
 
 # Configure Git safe directory
 RUN git config --global --add safe.directory /var/www
-
-# Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev --no-interaction
-
-# Install JS dependencies and build frontend assets
-RUN npm ci && npm run build && rm -rf node_modules
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \
@@ -43,9 +47,9 @@ COPY ./docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 COPY ./docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 80
-
 # Force PHP-FPM to listen on TCP
 RUN echo "listen = 127.0.0.1:9000" >> /usr/local/etc/php-fpm.d/zz-docker.conf
+
+EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
