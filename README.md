@@ -18,43 +18,47 @@ Resumind is a personal career management tool that helps users organize and trac
 
 - **Backend**: Laravel 12
 - **Admin Panel**: Filament 3
-- **Database**: SQLite (default)
+- **Database**: MySQL 8.4
 - **Testing**: PHPUnit
 - **Code Quality**: Laravel Pint
 
 ## Getting Started
 
-### Prerequisites
-
-- PHP 8.2+
-- Composer
-- Node.js (for frontend assets)
-
-### Installation
+### Docker (recommended)
 
 ```bash
 # Clone the repository
 git clone <repo-url>
 cd resumind
 
-# Install PHP dependencies
-composer install
-
 # Set up environment
 cp .env.example .env
+# Fill in APP_KEY, DB_PASSWORD, APP_URL in .env
+
+# Build and start all services
+docker-compose up -d --build
+```
+
+Migrations, caches, and storage setup run automatically on first start.
+
+### Local Development
+
+#### Prerequisites
+
+- PHP 8.5+
+- Composer
+- Node.js
+- MySQL
+
+#### Installation
+
+```bash
+composer install
+cp .env.example .env
 php artisan key:generate
-
-# Create database
-touch database/database.sqlite
-
-# Run migrations
 php artisan migrate
-
-# Install frontend dependencies
 npm install
 npm run build
-
-# Start development server
 composer run dev
 ```
 
