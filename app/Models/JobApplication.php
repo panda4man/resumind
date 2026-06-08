@@ -12,11 +12,12 @@ class JobApplication extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_name', 'job_title', 'job_description', 'cover_letter_path', 'status', 'submitted_at', 'responded_at',
+        'company_name', 'job_title', 'job_description', 'cover_letter_path', 'status', 'posted_at', 'submitted_at', 'responded_at',
         'preferred', 'salary_lower', 'salary_upper', 'website', 'glassdoor', 'stack', 'remote', 'source',
     ];
 
     protected $casts = [
+        'posted_at' => 'date',
         'submitted_at' => 'datetime',
         'responded_at' => 'datetime',
         'preferred' => 'boolean',

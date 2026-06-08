@@ -46,6 +46,7 @@ class JobApplicationResource extends Resource
                     ])
                     ->required(),
 
+                Components\DatePicker::make('posted_at'),
                 Components\DatePicker::make('submitted_at'),
                 Components\DatePicker::make('responded_at'),
                 Components\Textarea::make('job_description'),
@@ -78,6 +79,7 @@ class JobApplicationResource extends Resource
                 TextColumn::make('company_name')->searchable()->sortable(),
                 TextColumn::make('job_title')->searchable()->sortable(),
                 TextColumn::make('status')->badge(),
+                TextColumn::make('posted_at')->date()->sortable(),
                 TextColumn::make('submitted_at')->date()->sortable(),
                 TextColumn::make('responded_at')->date()->sortable(),
                 TextColumn::make('resume.name')->label('Resume'),
