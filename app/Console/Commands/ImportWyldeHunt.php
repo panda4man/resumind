@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\JobApplicationStatusesEnum;
+use App\Models\Company;
 use App\Models\JobApplication;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -20,7 +21,7 @@ class ImportWyldeHunt extends Command
      * Spreadsheet header (lowercased) => job_applications attribute / logical field.
      */
     private const HEADER_MAP = [
-        'company' => 'company_name',
+        'company' => 'company',
         'status' => 'status',
         'preferred' => 'preferred',
         'salary lower (k)' => 'salary_lower',
@@ -76,7 +77,7 @@ class ImportWyldeHunt extends Command
             }
         }
 
-        if (! isset($columns['company_name'])) {
+        if (! isset($columns['company'])) {
             $this->error('Could not find a "Company" column in the header row.');
 
             return self::FAILURE;
@@ -90,9 +91,9 @@ class ImportWyldeHunt extends Command
             foreach ($rows as $rowNumber => $row) {
                 $get = fn (string $field) => isset($columns[$field]) ? ($row[$columns[$field]] ?? null) : null;
 
-                $company = $this->cleanString($get('company_name'));
+                $companyName = $this->cleanString($get('company'));
 
-                if ($company === null) {
+                if ($companyName === null) {
                     $skipped++;
 
                     continue; // blank row
@@ -100,15 +101,24 @@ class ImportWyldeHunt extends Command
 
                 $jobTitle = $this->cleanString($get('job_title'));
                 if ($jobTitle === null) {
-                    $this->warn("Row {$rowNumber}: '{$company}' has no job title; left null.");
+                    $this->warn("Row {$rowNumber}: '{$companyName}' has no job title; left null.");
                 }
 
                 $rawStatus = strtolower(trim((string) $get('status')));
                 $status = self::STATUS_MAP[$rawStatus] ?? null;
                 if ($status === null) {
-                    $this->warn("Row {$rowNumber}: '{$company}' has unknown status '{$rawStatus}'; defaulting to applied.");
+                    $this->warn("Row {$rowNumber}: '{$companyName}' has unknown status '{$rawStatus}'; defaulting to applied.");
                     $status = JobApplicationStatusesEnum::Applied;
                 }
+
+                $companyModel = Company::firstOrCreate(
+                    ['name' => $companyName],
+                    array_filter([
+                        'website'   => $this->cleanString($get('website')),
+                        'glassdoor' => $this->cleanString($get('glassdoor')),
+                        'stack'     => $this->cleanString($get('stack')),
+                    ], fn ($v) => $v !== null),
+                );
 
                 $attributes = [
                     'status' => $status->value,
@@ -116,16 +126,13 @@ class ImportWyldeHunt extends Command
                     'remote' => $this->toBool($get('remote')),
                     'salary_lower' => $this->toSalary($get('salary_lower')),
                     'salary_upper' => $this->toSalary($get('salary_upper')),
-                    'website' => $this->cleanString($get('website')),
-                    'glassdoor' => $this->cleanString($get('glassdoor')),
-                    'stack' => $this->cleanString($get('stack')),
                     'source' => $this->cleanString($get('source')),
                     'submitted_at' => $this->toDate($get('submitted_at')),
                     'responded_at' => $this->toDate($get('responded_at')),
                 ];
 
                 $model = JobApplication::updateOrCreate(
-                    ['company_name' => $company, 'job_title' => $jobTitle],
+                    ['company_id' => $companyModel->id, 'job_title' => $jobTitle],
                     $attributes,
                 );
 

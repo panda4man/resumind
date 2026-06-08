@@ -12,8 +12,8 @@ class JobApplication extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_name', 'job_title', 'job_description', 'cover_letter_path', 'status', 'posted_at', 'submitted_at', 'responded_at',
-        'preferred', 'salary_lower', 'salary_upper', 'website', 'glassdoor', 'stack', 'remote', 'source',
+        'company_id', 'job_title', 'job_description', 'cover_letter_path', 'status', 'posted_at', 'submitted_at', 'responded_at',
+        'preferred', 'salary_lower', 'salary_upper', 'remote', 'source',
     ];
 
     protected $casts = [
@@ -34,6 +34,11 @@ class JobApplication extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(ApplicationQuestion::class);
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     public function resume(): BelongsTo

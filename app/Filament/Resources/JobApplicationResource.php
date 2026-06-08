@@ -28,9 +28,18 @@ class JobApplicationResource extends Resource
                     ->searchable()
                     ->label('Resume'),
 
-                Components\TextInput::make('company_name')
+                Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required()
-                    ->maxLength(255),
+                    ->createOptionForm([
+                        Components\TextInput::make('name')->required()->maxLength(255),
+                        Components\TextInput::make('website')->url()->maxLength(255),
+                        Components\TextInput::make('glassdoor')->url()->maxLength(255),
+                        Components\TextInput::make('stack')->maxLength(255),
+                    ])
+                    ->label('Company'),
 
                 Components\TextInput::make('job_title')
                     ->maxLength(255),
@@ -60,12 +69,6 @@ class JobApplicationResource extends Resource
                             ->numeric()->prefix('$')->suffix('k'),
                         Components\TextInput::make('salary_upper')
                             ->numeric()->prefix('$')->suffix('k'),
-                        Components\TextInput::make('website')
-                            ->url()->maxLength(255),
-                        Components\TextInput::make('glassdoor')
-                            ->url()->maxLength(255),
-                        Components\TextInput::make('stack')
-                            ->maxLength(255),
                         Components\TextInput::make('source')
                             ->maxLength(255),
                     ]),
@@ -76,7 +79,7 @@ class JobApplicationResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('company_name')->searchable()->sortable(),
+                TextColumn::make('company.name')->label('Company')->searchable()->sortable(),
                 TextColumn::make('job_title')->searchable()->sortable(),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('posted_at')->date()->sortable(),
@@ -88,8 +91,6 @@ class JobApplicationResource extends Resource
                 Tables\Columns\IconColumn::make('remote')->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('source')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('stack')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('salary_lower')
                     ->formatStateUsing(fn ($state) => $state ? "\${$state}k" : null)

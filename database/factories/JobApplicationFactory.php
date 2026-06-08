@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Company;
 use App\Models\JobApplication;
 use App\Models\Resume;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +21,7 @@ class JobApplicationFactory extends Factory
     {
         return [
             'resume_id' => Resume::factory(),
-            'company_name' => fake()->company(),
+            'company_id' => Company::factory(),
             'job_title' => fake()->jobTitle(),
             'job_description' => fake()->paragraph(),
             'cover_letter_path' => '/path/to/cover-letter-' . fake()->uuid() . '.pdf',
