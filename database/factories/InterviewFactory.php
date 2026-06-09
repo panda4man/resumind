@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Interview;
 use App\Models\JobApplication;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

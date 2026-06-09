@@ -14,7 +14,7 @@ class GenerateCompanySummary
         $websiteContent = $this->fetchWebsiteContent($company);
         $summary = $this->callOllama($company->name, $websiteContent);
 
-        $company->update(['summary' => $summary]);
+        $company->updateQuietly(['summary' => $summary]);
 
         return $summary;
     }
@@ -28,8 +28,9 @@ class GenerateCompanySummary
         try {
             $response = Http::timeout(15)->get($company->website);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::warning("Failed to fetch website for {$company->name}: {$response->status()}");
+
                 return null;
             }
 
@@ -41,9 +42,11 @@ class GenerateCompanySummary
             return $content;
         } catch (RequestException $e) {
             Log::warning("Website fetch error for {$company->name}: {$e->getMessage()}");
+
             return null;
         } catch (\Exception $e) {
             Log::warning("Unexpected error fetching website for {$company->name}: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -52,14 +55,14 @@ class GenerateCompanySummary
     {
         $prompt = $this->buildPrompt($companyName, $websiteContent);
 
-        $response = Http::timeout(90)->post(config('services.ollama.llm_url') . '/api/generate', [
+        $response = Http::timeout(90)->post(config('services.ollama.llm_url').'/api/generate', [
             'model' => config('services.ollama.llm_model'),
             'prompt' => $prompt,
             'stream' => false,
         ]);
 
         if ($response->failed()) {
-            throw new \RuntimeException('Ollama API request failed: ' . $response->status() . ' ' . $response->body());
+            throw new \RuntimeException('Ollama API request failed: '.$response->status().' '.$response->body());
         }
 
         $summary = trim($response->json('response', ''));

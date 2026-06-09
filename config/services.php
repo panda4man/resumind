@@ -36,7 +36,7 @@ return [
     ],
 
     'ollama' => [
-        'llm_url'   => env('OLLAMA_LLM_URL', 'http://192.168.50.46:11434'),
+        'llm_url' => env('OLLAMA_LLM_URL', 'http://192.168.50.46:11434'),
         'llm_model' => env('OLLAMA_LLM_MODEL', 'qwen3:8b'),
     ],
 

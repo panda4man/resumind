@@ -92,12 +92,12 @@ class InterviewResource extends Resource
             Components\Select::make('length_minutes')
                 ->label('Duration (minutes)')
                 ->options(
-                    collect(range(5, 180, 5))->mapWithKeys(fn($v) => [
-                        $v => str_pad(floor($v / 60) . 'h ', 4, ' ', STR_PAD_RIGHT) . str_pad($v % 60 . 'm', 3, '0', STR_PAD_LEFT)
+                    collect(range(5, 180, 5))->mapWithKeys(fn ($v) => [
+                        $v => str_pad(floor($v / 60).'h ', 4, ' ', STR_PAD_RIGHT).str_pad($v % 60 .'m', 3, '0', STR_PAD_LEFT),
                     ])
                 )
                 ->required(),
-            Components\Textarea::make('notes')
+            Components\Textarea::make('notes'),
         ];
     }
 }

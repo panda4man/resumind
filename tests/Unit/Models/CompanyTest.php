@@ -6,11 +6,18 @@ use App\Models\Company;
 use App\Models\JobApplication;
 use App\Models\Resume;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CompanyTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Queue::fake();
+    }
 
     public function test_company_fillable_attributes(): void
     {

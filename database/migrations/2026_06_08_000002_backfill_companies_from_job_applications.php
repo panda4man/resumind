@@ -26,10 +26,10 @@ return new class extends Migration
                     ->get(['website', 'glassdoor', 'stack']);
 
                 $companyId = DB::table('companies')->insertGetId([
-                    'name'       => $row->company_name,
-                    'website'    => $sources->first(fn ($s) => $s->website !== null)?->website,
-                    'glassdoor'  => $sources->first(fn ($s) => $s->glassdoor !== null)?->glassdoor,
-                    'stack'      => $sources->first(fn ($s) => $s->stack !== null)?->stack,
+                    'name' => $row->company_name,
+                    'website' => $sources->first(fn ($s) => $s->website !== null)?->website,
+                    'glassdoor' => $sources->first(fn ($s) => $s->glassdoor !== null)?->glassdoor,
+                    'stack' => $sources->first(fn ($s) => $s->stack !== null)?->stack,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

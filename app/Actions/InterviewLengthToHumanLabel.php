@@ -8,7 +8,7 @@ class InterviewLengthToHumanLabel
 {
     public function handle(Interview $interview): string
     {
-        if (!$interview->length_minutes || $interview->length_minutes === 0) {
+        if (! $interview->length_minutes || $interview->length_minutes === 0) {
             return '—';
         }
 

@@ -15,9 +15,7 @@ class GenerateCompanySummaryJob implements ShouldQueue
 
     public int $timeout = 120;
 
-    public function __construct(public readonly Company $company)
-    {
-    }
+    public function __construct(public readonly Company $company) {}
 
     public function handle(GenerateCompanySummary $action): void
     {

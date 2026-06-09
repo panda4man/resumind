@@ -13,9 +13,15 @@ class CompanyFactory extends Factory
     {
         return [
             'name' => fake()->unique()->company(),
-            'website' => fake()->optional()->url(),
-            'glassdoor' => fake()->optional()->url(),
-            'stack' => fake()->optional()->randomElement(['PHP/Laravel', 'TypeScript/React', 'Go', 'Python/Django', 'Ruby/Rails', 'Java/Spring']),
+            'website' => null,
+            'glassdoor' => null,
+            'stack' => null,
+            'summary' => null,
         ];
+    }
+
+    public function withWebsite(): static
+    {
+        return $this->state(['website' => fake()->url()]);
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\InterviewResource\Pages;
 
 use App\Filament\Resources\InterviewResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateInterview extends CreateRecord

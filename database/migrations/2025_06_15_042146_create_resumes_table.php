@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('resumes', function (Blueprint $table) {
-             $table->id();
+            $table->id();
             $table->string('name'); // e.g. "Backend Resume"
             $table->string('file_path');
             $table->timestamps();
