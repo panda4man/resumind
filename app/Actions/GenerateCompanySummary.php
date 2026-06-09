@@ -62,7 +62,10 @@ class GenerateCompanySummary
             throw new \RuntimeException('Ollama API request failed: ' . $response->status() . ' ' . $response->body());
         }
 
-        return trim($response->json('response', ''));
+        $summary = trim($response->json('response', ''));
+        $summary = preg_replace('/<think>.*?<\/think>/s', '', $summary);
+
+        return trim($summary);
     }
 
     private function buildPrompt(string $companyName, ?string $websiteContent): string
