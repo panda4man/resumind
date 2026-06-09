@@ -6,6 +6,7 @@ use App\Enums\CompanyTypesEnum;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Models\Company;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -43,6 +44,12 @@ class CompanyResource extends Resource
                     ->options(collect(CompanyTypesEnum::cases())->mapWithKeys(fn ($e) => [$e->value => $e->name]))
                     ->nullable()
                     ->placeholder('Select type'),
+
+                Textarea::make('summary')
+                    ->rows(8)
+                    ->columnSpanFull()
+                    ->placeholder('AI-generated or manually entered company summary…')
+                    ->helperText('Use "Generate AI Summary" to auto-populate.'),
             ]);
     }
 

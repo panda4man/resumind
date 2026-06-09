@@ -10,7 +10,7 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'website', 'glassdoor', 'stack', 'type'];
+    protected $fillable = ['name', 'website', 'glassdoor', 'stack', 'type', 'summary'];
 
     public function jobApplications(): HasMany
     {
