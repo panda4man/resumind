@@ -152,3 +152,40 @@ Replace `<your-model-id>` with your active model:
 - GPT-4o / GPT-5 / o1 / Llama → use the model id as printed by your runner
 
 The `model=` parameter rides on the existing `plan_turn` call — it does **not** add a separate tool invocation. If `plan_turn` is not appropriate for a non-code task, call `announce_model(model="...")` once instead.
+
+## Model Assignment Policy
+
+Hard rules — no exceptions:
+
+### Phase → Model
+
+| Phase | Model | ID |
+|-------|-------|----|
+| **Planning** | Claude Opus 4.8 | `claude-opus-4-8` |
+| **Implementation** | Claude Sonnet 4.6 | `claude-sonnet-4-6` |
+| **Plan review** | Haiku 4.5 + Sonnet 4.6 (two-pass) | see below |
+
+### Planning
+
+All planning work — writing plans, brainstorming, architecture decisions, writing specs — MUST use Opus (`claude-opus-4-8`). Pass `model="claude-opus-4-8"` to any `plan_turn` call during planning phases.
+
+### Implementation
+
+All code writing, file edits, and execution work MUST use Sonnet (`claude-sonnet-4-6`).
+
+### Plan Review (Two-Pass)
+
+After Opus produces a plan, run two independent review passes before the plan is finalized:
+
+1. **Pass 1 — Haiku** (`claude-haiku-4-5`): Review plan for correctness, gaps, and risks. Produce a findings list with severity scores (1–10).
+2. **Pass 2 — Sonnet** (`claude-sonnet-4-6`): Independent review of the same plan. Produce a findings list with severity scores (1–10).
+
+**Weighted synthesis:**
+- Sonnet findings weight = **1.75×** (75% higher than Haiku)
+- Haiku findings weight = **1.0×**
+- Effective score for each finding = `severity × weight`
+- Findings that appear in both passes: sum the weighted scores
+- Findings unique to one pass: use that pass's weighted score alone
+- Rank all findings by effective score descending
+- Only findings with effective score ≥ 7.0 MUST be addressed before implementation begins
+- Findings 4.0–6.9 are recommended; findings < 4.0 are advisory only
