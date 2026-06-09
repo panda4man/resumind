@@ -14,8 +14,8 @@ class CoverLetterFactory extends Factory
     {
         return [
             'job_application_id' => JobApplication::factory(),
-            'name' => fake()->jobTitle() . ' Cover Letter',
-            'file_path' => '/path/to/cover-letter-' . fake()->uuid() . '.pdf',
+            'name' => fake()->jobTitle().' Cover Letter',
+            'file_path' => '/path/to/cover-letter-'.fake()->uuid().'.pdf',
         ];
     }
 }

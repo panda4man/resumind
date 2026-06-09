@@ -32,6 +32,7 @@ class EditCompany extends EditRecord
                             ->body('Add a website URL before generating a summary.')
                             ->warning()
                             ->send();
+
                         return;
                     }
 

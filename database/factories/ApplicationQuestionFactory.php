@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\ApplicationQuestion;
 use App\Models\JobApplication;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +19,7 @@ class ApplicationQuestionFactory extends Factory
     {
         return [
             'job_application_id' => JobApplication::factory(),
-            'question' => fake()->sentence() . '?',
+            'question' => fake()->sentence().'?',
             'answer' => fake()->optional(0.7)->paragraph(),
         ];
     }

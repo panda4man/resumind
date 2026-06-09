@@ -114,9 +114,9 @@ class ImportWyldeHunt extends Command
                 $companyModel = Company::firstOrCreate(
                     ['name' => $companyName],
                     array_filter([
-                        'website'   => $this->cleanString($get('website')),
+                        'website' => $this->cleanString($get('website')),
                         'glassdoor' => $this->cleanString($get('glassdoor')),
-                        'stack'     => $this->cleanString($get('stack')),
+                        'stack' => $this->cleanString($get('stack')),
                     ], fn ($v) => $v !== null),
                 );
 

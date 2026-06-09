@@ -13,7 +13,7 @@ class InterviewLengthToHumanLabelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new InterviewLengthToHumanLabel();
+        $this->action = new InterviewLengthToHumanLabel;
     }
 
     public function test_returns_dash_for_null_length(): void

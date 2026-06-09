@@ -10,7 +10,7 @@ class CompanyObserver
     public function saved(Company $company): void
     {
         // Dispatch only when both conditions hold: summary is empty AND website is present.
-        if (!blank($company->summary) || blank($company->website)) {
+        if (! blank($company->summary) || blank($company->website)) {
             return;
         }
 
