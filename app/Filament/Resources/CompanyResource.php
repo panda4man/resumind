@@ -64,7 +64,16 @@ class CompanyResource extends Resource
                     ->sortable(),
                 TextColumn::make('website')->limit(40)->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('stack')->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('type')->badge()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (CompanyTypesEnum $state): string => match ($state) {
+                        CompanyTypesEnum::SaaS       => 'info',
+                        CompanyTypesEnum::Agency     => 'warning',
+                        CompanyTypesEnum::Startup    => 'success',
+                        CompanyTypesEnum::NonProfit  => 'gray',
+                        CompanyTypesEnum::Government => 'danger',
+                    })
+                    ->toggleable(),
                 TextColumn::make('created_at')->date()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

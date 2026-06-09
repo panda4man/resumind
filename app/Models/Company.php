@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CompanyTypesEnum;
 use App\Observers\CompanyObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +15,10 @@ class Company extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'website', 'glassdoor', 'stack', 'type', 'summary'];
+
+    protected $casts = [
+        'type' => CompanyTypesEnum::class,
+    ];
 
     public function jobApplications(): HasMany
     {
