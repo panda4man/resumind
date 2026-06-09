@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\ApplicationQuestion;
 use App\Models\Company;
+use App\Models\CoverLetter;
 use App\Models\Interview;
 use App\Models\JobApplication;
 use App\Models\Resume;
@@ -32,6 +33,15 @@ class JobApplicationTest extends TestCase
 
         $this->assertTrue($application->questions->contains($question));
         $this->assertEquals(1, $application->questions()->count());
+    }
+
+    public function test_job_application_has_many_cover_letters(): void
+    {
+        $application = JobApplication::factory()->create();
+        $coverLetter = CoverLetter::factory()->for($application)->create();
+
+        $this->assertTrue($application->coverLetters->contains($coverLetter));
+        $this->assertEquals(1, $application->coverLetters()->count());
     }
 
     public function test_job_application_belongs_to_resume(): void
@@ -63,7 +73,6 @@ class JobApplicationTest extends TestCase
             'company_id' => $company->id,
             'job_title' => 'Senior Developer',
             'job_description' => 'Build cool stuff',
-            'cover_letter_path' => '/path/to/letter.pdf',
             'status' => 'applied',
             'submitted_at' => now(),
             'responded_at' => now(),
