@@ -81,6 +81,7 @@ class JobApplicationResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('company.name')->label('Company')->searchable()->sortable(),
+                TextColumn::make('company.stack')->label('Tech Stack')->searchable()->wrap(),
                 TextColumn::make('job_title')->searchable()->sortable(),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('posted_at')->date()->sortable(),
