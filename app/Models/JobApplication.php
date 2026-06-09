@@ -12,7 +12,7 @@ class JobApplication extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id', 'job_title', 'job_description', 'cover_letter_path', 'status', 'posted_at', 'submitted_at', 'responded_at',
+        'company_id', 'job_title', 'job_description', 'status', 'posted_at', 'submitted_at', 'responded_at',
         'preferred', 'salary_lower', 'salary_upper', 'remote', 'source',
     ];
 
@@ -34,6 +34,11 @@ class JobApplication extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(ApplicationQuestion::class);
+    }
+
+    public function coverLetters(): HasMany
+    {
+        return $this->hasMany(CoverLetter::class);
     }
 
     public function company(): BelongsTo
