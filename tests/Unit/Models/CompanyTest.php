@@ -19,12 +19,14 @@ class CompanyTest extends TestCase
             'website' => 'https://acme.example.com',
             'glassdoor' => 'https://glassdoor.com/acme',
             'stack' => 'PHP/Laravel',
+            'type' => 'saas',
         ]);
 
         $this->assertEquals('Acme Corp', $company->name);
         $this->assertEquals('https://acme.example.com', $company->website);
         $this->assertEquals('https://glassdoor.com/acme', $company->glassdoor);
         $this->assertEquals('PHP/Laravel', $company->stack);
+        $this->assertEquals('saas', $company->type);
     }
 
     public function test_company_has_many_job_applications(): void

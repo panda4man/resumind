@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\CompanyTypesEnum;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Models\Company;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -36,6 +38,11 @@ class CompanyResource extends Resource
 
                 TextInput::make('stack')
                     ->maxLength(255),
+
+                Select::make('type')
+                    ->options(collect(CompanyTypesEnum::cases())->mapWithKeys(fn ($e) => [$e->value => $e->name]))
+                    ->nullable()
+                    ->placeholder('Select type'),
             ]);
     }
 
@@ -50,6 +57,7 @@ class CompanyResource extends Resource
                     ->sortable(),
                 TextColumn::make('website')->limit(40)->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('stack')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('type')->badge()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->date()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
