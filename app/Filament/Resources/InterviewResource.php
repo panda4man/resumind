@@ -6,6 +6,7 @@ use App\Enums\InterviewFormatsEnum;
 use App\Enums\InterviewTypesEnum;
 use App\Filament\Resources\InterviewResource\Pages;
 use App\Models\Interview;
+use App\Models\JobApplication;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -32,6 +33,14 @@ class InterviewResource extends Resource
                     ->getOptionLabelFromRecordUsing(
                         fn ($record) => "{$record->job_title} @ {$record->company->name}"
                     )
+                    ->getSearchResultsUsing(function (string $search) {
+                        return JobApplication::with('company')
+                            ->where('job_title', 'like', "%{$search}%")
+                            ->orWhereHas('company', fn ($q) => $q->where('name', 'like', "%{$search}%"))
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(fn ($record) => [$record->id => "{$record->job_title} @ {$record->company->name}"]);
+                    })
                     ->searchable()
                     ->preload()
                     ->required()
