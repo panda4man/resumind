@@ -22,13 +22,34 @@ class InterviewResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(static::getSharedFormFields());
+            ->schema([
+                Components\Select::make('job_application_id')
+                    ->relationship(
+                        name: 'jobApplication',
+                        titleAttribute: 'job_title',
+                        modifyQueryUsing: fn ($query) => $query->with('company'),
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn ($record) => "{$record->job_title} @ {$record->company->name}"
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->label('Job Application'),
+                ...static::getSharedFormFields(),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(static::getSharedColumns())
+            ->columns([
+                TextColumn::make('jobApplication.company.name')
+                    ->label('Company')
+                    ->searchable()
+                    ->sortable(),
+                ...static::getSharedColumns(),
+            ])
             ->filters([
                 //
             ])
