@@ -45,6 +45,10 @@ class CompanyResource extends Resource
                     ->nullable()
                     ->placeholder('Select type'),
 
+                TextInput::make('size')
+                    ->maxLength(255)
+                    ->placeholder('e.g. 70-100'),
+
                 Textarea::make('summary')
                     ->rows(8)
                     ->columnSpanFull()
@@ -64,6 +68,7 @@ class CompanyResource extends Resource
                     ->sortable(),
                 TextColumn::make('website')->limit(40)->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('stack')->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('size')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('type')
                     ->badge()
                     ->color(fn (CompanyTypesEnum $state): string => match ($state) {
