@@ -73,9 +73,9 @@ class CompanyResource extends Resource
                 TextColumn::make('name')->searchable()->sortable(),
                 ImageColumn::make('logo_url')
                     ->label('Logo')
-                    ->size(32)
-                    ->defaultImageUrl(null)
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->size(40)
+                    ->circular()
+                    ->defaultImageUrl(null),
                 TextColumn::make('job_applications_count')
                     ->label('Applications')
                     ->counts('jobApplications')
