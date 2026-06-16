@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,6 +39,13 @@ class CompanyResource extends Resource
                     ->url()
                     ->maxLength(255),
 
+                TextInput::make('logo_url')
+                    ->label('Logo URL')
+                    ->url()
+                    ->maxLength(255)
+                    ->nullable()
+                    ->helperText('Auto-fetched from website OG tags, or enter manually.'),
+
                 TextInput::make('stack')
                     ->maxLength(255),
 
@@ -63,6 +71,11 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->searchable()->sortable(),
+                ImageColumn::make('logo_url')
+                    ->label('Logo')
+                    ->size(32)
+                    ->defaultImageUrl(null)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('job_applications_count')
                     ->label('Applications')
                     ->counts('jobApplications')

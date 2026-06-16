@@ -14,7 +14,7 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'website', 'glassdoor', 'stack', 'type', 'summary', 'size'];
+    protected $fillable = ['name', 'website', 'glassdoor', 'stack', 'type', 'summary', 'size', 'logo_url'];
 
     protected $casts = [
         'type' => CompanyTypesEnum::class,
