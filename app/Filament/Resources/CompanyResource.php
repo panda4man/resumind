@@ -31,7 +31,8 @@ class CompanyResource extends Resource
 
                 TextInput::make('website')
                     ->url()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->unique('companies', 'website', ignoreRecord: true),
 
                 TextInput::make('glassdoor')
                     ->url()
