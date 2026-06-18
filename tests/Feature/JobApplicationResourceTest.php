@@ -1,0 +1,50 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Filament\Resources\JobApplicationResource;
+use App\Filament\Resources\JobApplicationResource\Pages\ListJobApplications;
+use App\Models\JobApplication;
+use App\Models\User;
+use Filament\Facades\Filament;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
+use Tests\TestCase;
+
+class JobApplicationResourceTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+        $this->actingAs(User::factory()->create());
+    }
+
+    public function test_job_applications_index_renders_for_authenticated_users(): void
+    {
+        $this->get(JobApplicationResource::getUrl('index'))
+            ->assertSuccessful();
+    }
+
+    public function test_job_applications_index_defaults_to_submitted_at_descending(): void
+    {
+        $oldest = JobApplication::factory()->create([
+            'job_title' => 'Oldest application',
+            'submitted_at' => now()->subDays(10),
+        ]);
+        $middle = JobApplication::factory()->create([
+            'job_title' => 'Middle application',
+            'submitted_at' => now()->subDays(5),
+        ]);
+        $newest = JobApplication::factory()->create([
+            'job_title' => 'Newest application',
+            'submitted_at' => now()->subDay(),
+        ]);
+
+        Livewire::test(ListJobApplications::class)
+            ->assertCanSeeTableRecords([$newest, $middle, $oldest], inOrder: true);
+    }
+}

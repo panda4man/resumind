@@ -79,6 +79,7 @@ class JobApplicationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('submitted_at', 'desc')
             ->columns([
                 TextColumn::make('company.name')->label('Company')->searchable()->sortable(),
                 TextColumn::make('company.stack')->label('Tech Stack')->searchable()->wrap(),
