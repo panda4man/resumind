@@ -7,13 +7,32 @@ use App\Models\Company;
 use App\Models\CoverLetter;
 use App\Models\Interview;
 use App\Models\JobApplication;
+use App\Models\JobApplicationStatusEvent;
 use App\Models\Resume;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class JobApplicationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (! Schema::hasTable('job_application_status_events')) {
+            Schema::create('job_application_status_events', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('job_application_id')->constrained()->cascadeOnDelete();
+                $table->string('event_name');
+                $table->timestamp('occurred_at')->nullable();
+                $table->timestamps();
+                $table->unique(['job_application_id', 'event_name']);
+            });
+        }
+    }
 
     public function test_job_application_has_many_interviews(): void
     {
@@ -42,6 +61,15 @@ class JobApplicationTest extends TestCase
 
         $this->assertTrue($application->coverLetters->contains($coverLetter));
         $this->assertEquals(1, $application->coverLetters()->count());
+    }
+
+    public function test_job_application_has_many_status_events(): void
+    {
+        $application = JobApplication::factory()->create();
+        $statusEvent = JobApplicationStatusEvent::factory()->for($application)->create();
+
+        $this->assertTrue($application->statusEvents->contains($statusEvent));
+        $this->assertEquals(1, $application->statusEvents()->count());
     }
 
     public function test_job_application_belongs_to_resume(): void

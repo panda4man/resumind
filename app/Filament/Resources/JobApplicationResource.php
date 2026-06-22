@@ -6,6 +6,7 @@ use App\Enums\JobApplicationStatusesEnum;
 use App\Filament\Resources\JobApplicationResource\Pages;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\CoverLettersRelationManager;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\InterviewsRelationManager;
+use App\Filament\Resources\JobApplicationResource\RelationManagers\StatusEventsRelationManager;
 use App\Models\JobApplication;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -128,6 +129,7 @@ class JobApplicationResource extends Resource
         return [
             InterviewsRelationManager::class,
             CoverLettersRelationManager::class,
+            StatusEventsRelationManager::class,
         ];
     }
 
