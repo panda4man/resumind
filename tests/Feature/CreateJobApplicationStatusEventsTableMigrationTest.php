@@ -8,6 +8,8 @@ use Tests\TestCase;
 
 class CreateJobApplicationStatusEventsTableMigrationTest extends TestCase
 {
+    private const UNIQUE_INDEX = 'ja_status_events_job_app_event_unique';
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -42,6 +44,9 @@ class CreateJobApplicationStatusEventsTableMigrationTest extends TestCase
         $this->assertTrue(
             Schema::hasIndex('job_application_status_events', ['job_application_id', 'event_name'], 'unique')
         );
+        $this->assertTrue(
+            Schema::hasIndex('job_application_status_events', self::UNIQUE_INDEX, 'unique')
+        );
     }
 
     public function test_migration_is_safe_when_the_table_already_exists(): void
@@ -61,6 +66,9 @@ class CreateJobApplicationStatusEventsTableMigrationTest extends TestCase
         $this->assertTrue(Schema::hasTable('job_application_status_events'));
         $this->assertTrue(
             Schema::hasIndex('job_application_status_events', ['job_application_id', 'event_name'], 'unique')
+        );
+        $this->assertTrue(
+            Schema::hasIndex('job_application_status_events', self::UNIQUE_INDEX, 'unique')
         );
     }
 }
