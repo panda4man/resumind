@@ -80,6 +80,61 @@ Key environment variables in `.env`:
 - `MAIL_MAILER` - Email service provider
 - `DATABASE_URL` - Database connection string
 
+## Role Skills
+
+Agents should route work through these role skills when task shape matches:
+
+### `architect`
+
+Use first for:
+- New features
+- Multi-file or cross-cutting changes
+- Unclear requirements
+- Refactors with behavior risk
+- Bugs without confirmed root cause
+
+Expected output:
+- Problem framing
+- Options and recommendation
+- Execution slices
+- Risks and verification strategy
+
+### `senior-software-engineer`
+
+Use for:
+- Approved implementation
+- Focused bug fixes
+- Refactors with clear target
+- Code changes that should follow existing repo patterns
+
+Expected behavior:
+- Read current code before editing
+- Keep diffs intentional
+- Prefer simple maintainable solutions
+- Escalate back to `architect` if scope becomes unclear
+
+### `qc-qa-specialist`
+
+Use for:
+- Any behavior change
+- TDD before code
+- Regression coverage
+- Bug reproduction
+- Verification before declaring work complete
+
+Expected behavior:
+- Define acceptance checks early
+- Prefer failing test first when code behavior changes
+- Validate fixes with executed evidence, not assumption
+
+### Routing Rules
+
+- Prefer `architect` before substantial work unless user explicitly asks for direct implementation.
+- Prefer `qc-qa-specialist` before and after code changes: first for test strategy or TDD, last for verification.
+- Use `senior-software-engineer` for implementation once approach is clear.
+- Skills stay independent; invoke one, two, or all three based on task shape.
+- If task is tiny and fully clear, `senior-software-engineer` may start directly, but still use `qc-qa-specialist` for behavior changes.
+
 ## Code Exploration Policy
 
 Always use jCodemunch-MCP tools for code navigation. Never fall back to Read, Grep, Glob, or Bash for code exploration.
@@ -153,4 +208,3 @@ Replace `<your-model-id>` with your active model:
 - GPT-4o / GPT-5 / o1 / Llama → use the model id as printed by your runner
 
 The `model=` parameter rides on the existing `plan_turn` call — it does **not** add a separate tool invocation. If `plan_turn` is not appropriate for a non-code task, call `announce_model(model="...")` once instead.
-
