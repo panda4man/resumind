@@ -41,6 +41,11 @@ class JobApplication extends Model
         return $this->hasMany(CoverLetter::class);
     }
 
+    public function statusEvents(): HasMany
+    {
+        return $this->hasMany(JobApplicationStatusEvent::class);
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
