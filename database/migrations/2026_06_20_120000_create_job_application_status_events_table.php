@@ -8,15 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('job_application_status_events', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('job_application_id')->constrained()->cascadeOnDelete();
-            $table->string('event_name');
-            $table->timestamp('occurred_at')->nullable();
-            $table->timestamps();
+        if (! Schema::hasTable('job_application_status_events')) {
+            Schema::create('job_application_status_events', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('job_application_id')->constrained()->cascadeOnDelete();
+                $table->string('event_name');
+                $table->timestamp('occurred_at')->nullable();
+                $table->timestamps();
 
-            $table->unique(['job_application_id', 'event_name']);
-        });
+                $table->unique(['job_application_id', 'event_name']);
+            });
+
+            return;
+        }
+
+        if (! Schema::hasIndex('job_application_status_events', ['job_application_id', 'event_name'], 'unique')) {
+            Schema::table('job_application_status_events', function (Blueprint $table) {
+                $table->unique(['job_application_id', 'event_name']);
+            });
+        }
     }
 
     public function down(): void
