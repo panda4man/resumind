@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\JobApplicationStatusesEnum;
+use App\Enums\StatusEventName;
 use App\Filament\Resources\JobApplicationResource\Pages;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\CoverLettersRelationManager;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\InterviewsRelationManager;
@@ -58,9 +59,22 @@ class JobApplicationResource extends Resource
                     ->required(),
 
                 Components\DatePicker::make('posted_at'),
-                Components\DatePicker::make('submitted_at'),
+                Components\DatePicker::make('submitted_at')
+                    ->visible(fn (string $operation): bool => $operation === 'edit')
+                    ->readOnly()
+                    ->dehydrated(false)
+                    ->afterStateHydrated(function (Components\DatePicker $component, ?JobApplication $record): void {
+                        $component->state(
+                            $record?->statusEvents()
+                                ->where('event_name', StatusEventName::Submitted)
+                                ->latest('occurred_at')
+                                ->value('occurred_at')
+                        );
+                    }),
                 Components\DatePicker::make('responded_at'),
-                Components\Textarea::make('job_description'),
+                Components\Textarea::make('job_description')
+                    ->rows(8)
+                    ->columnSpanFull(),
 
                 Components\Section::make('Details')
                     ->columns(2)
