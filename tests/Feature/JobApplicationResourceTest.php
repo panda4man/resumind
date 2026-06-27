@@ -124,6 +124,36 @@ class JobApplicationResourceTest extends TestCase
         $this->assertSame(JobApplicationStatusesEnum::Applied->value, $application->fresh()->status);
     }
 
+    public function test_view_page_status_timeline_is_ordered_by_occurred_at_descending(): void
+    {
+        $application = JobApplication::factory()->create();
+        $newestOccurredAt = now()->subDay()->setTime(15, 0);
+        $middleOccurredAt = now()->subDays(2)->setTime(11, 0);
+        $oldestOccurredAt = now()->subDays(3)->setTime(9, 0);
+
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Interviewing,
+            'occurred_at' => $newestOccurredAt,
+        ]);
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Submitted,
+            'occurred_at' => $oldestOccurredAt,
+        ]);
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Responded,
+            'occurred_at' => $middleOccurredAt,
+        ]);
+
+        $response = $this->get(JobApplicationResource::getUrl('view', ['record' => $application]));
+
+        $response->assertSuccessful();
+        $response->assertSeeInOrder([
+            $newestOccurredAt->format('M d, Y H:i'),
+            $middleOccurredAt->format('M d, Y H:i'),
+            $oldestOccurredAt->format('M d, Y H:i'),
+        ]);
+    }
+
     public function test_job_application_resource_excludes_status_events_relation_manager(): void
     {
         $this->assertSame([

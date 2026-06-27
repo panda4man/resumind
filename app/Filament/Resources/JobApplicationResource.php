@@ -163,7 +163,12 @@ class JobApplicationResource extends Resource
                 InfolistSection::make('Status Timeline')
                     ->schema([
                         RepeatableEntry::make('statusEvents')
-                            ->state(fn (JobApplication $record) => $record->statusEvents()->latest('occurred_at')->latest('id')->get())
+                            ->state(fn (JobApplication $record): array => $record->statusEvents
+                                ->map(fn ($event): array => [
+                                    'event_name' => $event->event_name->value,
+                                    'occurred_at' => $event->occurred_at,
+                                ])
+                                ->all())
                             ->schema([
                                 TextEntry::make('event_name')
                                     ->badge(),
