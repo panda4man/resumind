@@ -52,7 +52,9 @@ class JobApplication extends Model
 
     public function statusEvents(): HasMany
     {
-        return $this->hasMany(JobApplicationStatusEvent::class);
+        return $this->hasMany(JobApplicationStatusEvent::class)
+            ->orderByDesc('occurred_at')
+            ->orderByDesc('id');
     }
 
     public function company(): BelongsTo

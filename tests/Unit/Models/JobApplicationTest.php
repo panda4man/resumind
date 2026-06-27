@@ -73,6 +73,29 @@ class JobApplicationTest extends TestCase
         $this->assertEquals(1, $application->statusEvents()->count());
     }
 
+    public function test_job_application_status_events_are_ordered_by_occurred_at_descending(): void
+    {
+        $application = JobApplication::factory()->create();
+
+        $newest = JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Interviewing,
+            'occurred_at' => now()->subDay()->setTime(9, 0),
+        ]);
+        $oldest = JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Submitted,
+            'occurred_at' => now()->subDays(3)->setTime(9, 0),
+        ]);
+        $middle = JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Responded,
+            'occurred_at' => now()->subDays(2)->setTime(9, 0),
+        ]);
+
+        $this->assertSame(
+            [$newest->id, $middle->id, $oldest->id],
+            $application->fresh()->statusEvents->pluck('id')->all(),
+        );
+    }
+
     public function test_job_application_belongs_to_resume(): void
     {
         $resume = Resume::factory()->create();
