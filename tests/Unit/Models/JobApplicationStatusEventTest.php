@@ -5,7 +5,6 @@ namespace Tests\Unit\Models;
 use App\Enums\StatusEventName;
 use App\Models\JobApplication;
 use App\Models\JobApplicationStatusEvent;
-use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
@@ -26,7 +25,6 @@ class JobApplicationStatusEventTest extends TestCase
                 $table->string('event_name');
                 $table->timestamp('occurred_at')->nullable();
                 $table->timestamps();
-                $table->unique(['job_application_id', 'event_name']);
             });
         }
     }
@@ -51,19 +49,22 @@ class JobApplicationStatusEventTest extends TestCase
         $this->assertIsObject($statusEvent->occurred_at);
     }
 
-    public function test_duplicate_event_names_are_rejected_per_job_application(): void
+    public function test_duplicate_event_names_are_allowed_per_job_application(): void
     {
         $application = JobApplication::factory()->create();
 
-        JobApplicationStatusEvent::factory()->for($application)->create([
+        $firstEvent = JobApplicationStatusEvent::factory()->for($application)->create([
             'event_name' => StatusEventName::Responded,
+            'occurred_at' => now()->subDays(2),
         ]);
 
-        $this->expectException(QueryException::class);
-
-        JobApplicationStatusEvent::factory()->for($application)->create([
+        $secondEvent = JobApplicationStatusEvent::factory()->for($application)->create([
             'event_name' => StatusEventName::Responded,
+            'occurred_at' => now()->subDay(),
         ]);
+
+        $this->assertNotSame($firstEvent->id, $secondEvent->id);
+        $this->assertSame(2, $application->statusEvents()->count());
     }
 
     public function test_same_event_name_can_exist_on_different_job_applications(): void

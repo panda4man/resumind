@@ -25,7 +25,6 @@ class BackfillSubmittedStatusEventsCommandTest extends TestCase
                 $table->string('event_name');
                 $table->timestamp('occurred_at')->nullable();
                 $table->timestamps();
-                $table->unique(['job_application_id', 'event_name']);
             });
         }
     }

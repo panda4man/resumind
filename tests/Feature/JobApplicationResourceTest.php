@@ -2,10 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Enums\JobApplicationStatusesEnum;
 use App\Enums\StatusEventName;
 use App\Filament\Resources\JobApplicationResource\Pages\CreateJobApplication;
 use App\Filament\Resources\JobApplicationResource\Pages\EditJobApplication;
+use App\Filament\Resources\JobApplicationResource\Pages\ViewJobApplication;
 use App\Filament\Resources\JobApplicationResource;
+use App\Filament\Resources\JobApplicationResource\RelationManagers\CoverLettersRelationManager;
+use App\Filament\Resources\JobApplicationResource\RelationManagers\InterviewsRelationManager;
 use App\Filament\Resources\JobApplicationResource\Pages\ListJobApplications;
 use App\Models\JobApplication;
 use App\Models\JobApplicationStatusEvent;
@@ -32,7 +36,6 @@ class JobApplicationResourceTest extends TestCase
                 $table->string('event_name');
                 $table->timestamp('occurred_at')->nullable();
                 $table->timestamps();
-                $table->unique(['job_application_id', 'event_name']);
             });
         }
 
@@ -90,5 +93,42 @@ class JobApplicationResourceTest extends TestCase
             ->assertFormSet([
                 'submitted_at' => $submittedEvent->occurred_at,
             ]);
+    }
+
+    public function test_job_application_view_page_renders_for_authenticated_users(): void
+    {
+        $application = JobApplication::factory()->create();
+
+        $this->get(JobApplicationResource::getUrl('view', ['record' => $application]))
+            ->assertSuccessful();
+    }
+
+    public function test_view_page_can_advance_status_and_sync_application_status(): void
+    {
+        $application = JobApplication::factory()->create([
+            'status' => JobApplicationStatusesEnum::Prospecting->value,
+        ]);
+
+        Livewire::test(ViewJobApplication::class, [
+            'record' => $application->getRouteKey(),
+        ])
+            ->callAction('advanceStatus', data: [
+                'event_name' => StatusEventName::Submitted->value,
+                'occurred_at' => now()->format('Y-m-d H:i:s'),
+            ]);
+
+        $this->assertDatabaseHas('job_application_status_events', [
+            'job_application_id' => $application->id,
+            'event_name' => StatusEventName::Submitted->value,
+        ]);
+        $this->assertSame(JobApplicationStatusesEnum::Applied->value, $application->fresh()->status);
+    }
+
+    public function test_job_application_resource_excludes_status_events_relation_manager(): void
+    {
+        $this->assertSame([
+            InterviewsRelationManager::class,
+            CoverLettersRelationManager::class,
+        ], JobApplicationResource::getRelations());
     }
 }

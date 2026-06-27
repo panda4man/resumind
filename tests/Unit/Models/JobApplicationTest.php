@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Models;
 
+use App\Enums\JobApplicationStatusesEnum;
+use App\Enums\StatusEventName;
 use App\Models\ApplicationQuestion;
 use App\Models\Company;
 use App\Models\CoverLetter;
@@ -29,7 +31,6 @@ class JobApplicationTest extends TestCase
                 $table->string('event_name');
                 $table->timestamp('occurred_at')->nullable();
                 $table->timestamps();
-                $table->unique(['job_application_id', 'event_name']);
             });
         }
     }
@@ -121,5 +122,68 @@ class JobApplicationTest extends TestCase
         if ($application->responded_at) {
             $this->assertIsObject($application->responded_at);
         }
+    }
+
+    public function test_current_status_defaults_to_prospecting_without_events(): void
+    {
+        $application = JobApplication::factory()->create([
+            'status' => JobApplicationStatusesEnum::Applied->value,
+        ]);
+
+        $this->assertSame(JobApplicationStatusesEnum::Prospecting, $application->currentStatus());
+    }
+
+    public function test_current_status_comes_from_latest_status_event(): void
+    {
+        $application = JobApplication::factory()->create([
+            'status' => JobApplicationStatusesEnum::Prospecting->value,
+        ]);
+
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Submitted,
+            'occurred_at' => now()->subDays(3),
+        ]);
+
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Interviewing,
+            'occurred_at' => now()->subDay(),
+        ]);
+
+        $this->assertSame(JobApplicationStatusesEnum::Interviewing, $application->fresh()->currentStatus());
+    }
+
+    public function test_status_field_syncs_when_event_created(): void
+    {
+        $application = JobApplication::factory()->create([
+            'status' => JobApplicationStatusesEnum::Prospecting->value,
+        ]);
+
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Submitted,
+            'occurred_at' => now()->subDay(),
+        ]);
+
+        $this->assertSame(JobApplicationStatusesEnum::Applied->value, $application->fresh()->status);
+    }
+
+    public function test_status_field_recomputes_when_latest_event_deleted(): void
+    {
+        $application = JobApplication::factory()->create([
+            'status' => JobApplicationStatusesEnum::Prospecting->value,
+        ]);
+
+        JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Submitted,
+            'occurred_at' => now()->subDays(2),
+        ]);
+
+        $latestEvent = JobApplicationStatusEvent::factory()->for($application)->create([
+            'event_name' => StatusEventName::Interviewing,
+            'occurred_at' => now()->subDay(),
+        ]);
+
+        $latestEvent->delete();
+
+        $this->assertSame(JobApplicationStatusesEnum::Applied->value, $application->fresh()->status);
     }
 }
