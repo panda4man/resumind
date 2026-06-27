@@ -11,6 +11,17 @@ class JobApplicationStatusEvent extends Model
 {
     use HasFactory;
 
+    protected static function booted(): void
+    {
+        static::saved(function (self $event): void {
+            $event->jobApplication?->syncStatusFromEvents();
+        });
+
+        static::deleted(function (self $event): void {
+            $event->jobApplication?->syncStatusFromEvents();
+        });
+    }
+
     protected $fillable = [
         'job_application_id',
         'event_name',

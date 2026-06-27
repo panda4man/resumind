@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\JobApplicationStatusesEnum;
 use App\Models\Company;
 use App\Models\Resume;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,7 +24,7 @@ class JobApplicationFactory extends Factory
             'company_id' => Company::factory(),
             'job_title' => fake()->jobTitle(),
             'job_description' => fake()->paragraph(),
-            'status' => fake()->randomElement(['applied', 'interviewing', 'rejected', 'offer', 'accepted']),
+            'status' => JobApplicationStatusesEnum::Prospecting->value,
             'submitted_at' => fake()->dateTimeBetween('-3 months'),
             'responded_at' => fake()->optional(0.7)->dateTimeBetween('-2 months'),
         ];

@@ -7,10 +7,13 @@ use App\Enums\StatusEventName;
 use App\Filament\Resources\JobApplicationResource\Pages;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\CoverLettersRelationManager;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\InterviewsRelationManager;
-use App\Filament\Resources\JobApplicationResource\RelationManagers\StatusEventsRelationManager;
 use App\Models\JobApplication;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section as InfolistSection;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -46,17 +49,6 @@ class JobApplicationResource extends Resource
 
                 Components\TextInput::make('job_title')
                     ->maxLength(255),
-
-                Components\Select::make('status')
-                    ->options([
-                        JobApplicationStatusesEnum::Prospecting->value => JobApplicationStatusesEnum::Prospecting->name,
-                        JobApplicationStatusesEnum::Applied->value => JobApplicationStatusesEnum::Applied->name,
-                        JobApplicationStatusesEnum::Interviewing->value => JobApplicationStatusesEnum::Interviewing->name,
-                        JobApplicationStatusesEnum::Offer->value => JobApplicationStatusesEnum::Offer->name,
-                        JobApplicationStatusesEnum::Rejected->value => JobApplicationStatusesEnum::Rejected->name,
-                        JobApplicationStatusesEnum::Withdrawn->value => JobApplicationStatusesEnum::Withdrawn->name,
-                    ])
-                    ->required(),
 
                 Components\DatePicker::make('posted_at'),
                 Components\DatePicker::make('submitted_at')
@@ -129,6 +121,7 @@ class JobApplicationResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -143,8 +136,43 @@ class JobApplicationResource extends Resource
         return [
             InterviewsRelationManager::class,
             CoverLettersRelationManager::class,
-            StatusEventsRelationManager::class,
         ];
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                InfolistSection::make('Application')
+                    ->schema([
+                        TextEntry::make('company.name')
+                            ->label('Company'),
+                        TextEntry::make('job_title'),
+                        TextEntry::make('computed_status')
+                            ->label('Current Status')
+                            ->badge()
+                            ->state(fn (JobApplication $record): string => $record->currentStatus()->value),
+                        TextEntry::make('source'),
+                        TextEntry::make('posted_at')->date(),
+                        TextEntry::make('submitted_at')->dateTime(),
+                        TextEntry::make('responded_at')->dateTime(),
+                        TextEntry::make('job_description')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+                InfolistSection::make('Status Timeline')
+                    ->schema([
+                        RepeatableEntry::make('statusEvents')
+                            ->state(fn (JobApplication $record) => $record->statusEvents()->latest('occurred_at')->latest('id')->get())
+                            ->schema([
+                                TextEntry::make('event_name')
+                                    ->badge(),
+                                TextEntry::make('occurred_at')
+                                    ->dateTime('M d, Y H:i'),
+                            ])
+                            ->columns(2),
+                    ]),
+            ]);
     }
 
     public static function getPages(): array
@@ -152,6 +180,7 @@ class JobApplicationResource extends Resource
         return [
             'index' => Pages\ListJobApplications::route('/'),
             'create' => Pages\CreateJobApplication::route('/create'),
+            'view' => Pages\ViewJobApplication::route('/{record}'),
             'edit' => Pages\EditJobApplication::route('/{record}/edit'),
         ];
     }
