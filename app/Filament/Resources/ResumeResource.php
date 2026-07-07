@@ -7,6 +7,9 @@ use App\Models\Resume;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Section as InfolistSection;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -55,6 +58,7 @@ class ResumeResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -72,11 +76,33 @@ class ResumeResource extends Resource
         ];
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                InfolistSection::make('Resume')
+                    ->schema([
+                        TextEntry::make('name')
+                            ->label('Resume Name'),
+                        TextEntry::make('file_path')
+                            ->label('File'),
+                        TextEntry::make('job_applications_count')
+                            ->label('Applications Used In'),
+                        TextEntry::make('created_at')
+                            ->dateTime(),
+                        TextEntry::make('updated_at')
+                            ->dateTime(),
+                    ])
+                    ->columns(2),
+            ]);
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListResumes::route('/'),
             'create' => Pages\CreateResume::route('/create'),
+            'view' => Pages\ViewResume::route('/{record}'),
             'edit' => Pages\EditResume::route('/{record}/edit'),
         ];
     }
