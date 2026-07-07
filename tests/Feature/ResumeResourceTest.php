@@ -41,8 +41,8 @@ class ResumeResourceTest extends TestCase
 
     public function test_resume_view_page_download_action_downloads_resume_pdf(): void
     {
-        Storage::fake('local');
-        Storage::disk('local')->put('resumes/software-engineer.pdf', 'pdf contents');
+        Storage::fake('public');
+        Storage::disk('public')->put('resumes/software-engineer.pdf', 'pdf contents');
 
         $resume = Resume::factory()->create([
             'name' => 'Software Engineer',
@@ -58,7 +58,7 @@ class ResumeResourceTest extends TestCase
 
     public function test_resume_view_page_download_action_notifies_when_file_is_missing(): void
     {
-        Storage::fake('local');
+        Storage::fake('public');
 
         $resume = Resume::factory()->create([
             'file_path' => 'resumes/missing.pdf',

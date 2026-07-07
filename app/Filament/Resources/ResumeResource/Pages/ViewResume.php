@@ -28,7 +28,7 @@ class ViewResume extends ViewRecord
 
     private function downloadResume(): ?StreamedResponse
     {
-        $disk = Storage::disk(config('filesystems.default'));
+        $disk = Storage::disk(config('filament.default_filesystem_disk'));
         $path = $this->getRecord()->file_path;
 
         if (! $disk->exists($path)) {
