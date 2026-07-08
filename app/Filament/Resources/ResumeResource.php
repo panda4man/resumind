@@ -58,6 +58,11 @@ class ResumeResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('viewPdf')
+                    ->label('View PDF')
+                    ->icon('heroicon-o-document-magnifying-glass')
+                    ->url(fn (Resume $record): string => route('admin.resumes.file', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

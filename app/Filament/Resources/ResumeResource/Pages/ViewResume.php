@@ -17,6 +17,11 @@ class ViewResume extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('viewPdf')
+                ->label('View PDF')
+                ->icon('heroicon-o-document-magnifying-glass')
+                ->url(fn (): string => route('admin.resumes.file', $this->getRecord()))
+                ->openUrlInNewTab(),
             Actions\Action::make('download')
                 ->label('Download')
                 ->icon('heroicon-o-arrow-down-tray')
