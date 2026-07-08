@@ -4,16 +4,17 @@ namespace Tests\Feature;
 
 use App\Enums\JobApplicationStatusesEnum;
 use App\Enums\StatusEventName;
+use App\Filament\Resources\JobApplicationResource;
 use App\Filament\Resources\JobApplicationResource\Pages\CreateJobApplication;
 use App\Filament\Resources\JobApplicationResource\Pages\EditJobApplication;
+use App\Filament\Resources\JobApplicationResource\Pages\ListJobApplications;
 use App\Filament\Resources\JobApplicationResource\Pages\ViewJobApplication;
-use App\Filament\Resources\JobApplicationResource;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\CoverLettersRelationManager;
 use App\Filament\Resources\JobApplicationResource\RelationManagers\InterviewsRelationManager;
-use App\Filament\Resources\JobApplicationResource\Pages\ListJobApplications;
 use App\Models\JobApplication;
 use App\Models\JobApplicationStatusEvent;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -122,6 +123,28 @@ class JobApplicationResourceTest extends TestCase
             'event_name' => StatusEventName::Submitted->value,
         ]);
         $this->assertSame(JobApplicationStatusesEnum::Applied->value, $application->fresh()->status);
+    }
+
+    public function test_advance_status_modal_defaults_occurred_at_to_configured_timezone(): void
+    {
+        config(['app.timezone' => 'America/New_York']);
+        Carbon::setTestNow(Carbon::parse('2026-07-08 16:34:56', 'UTC'));
+
+        $application = JobApplication::factory()->create([
+            'status' => JobApplicationStatusesEnum::Prospecting->value,
+        ]);
+
+        try {
+            Livewire::test(ViewJobApplication::class, [
+                'record' => $application->getRouteKey(),
+            ])
+                ->mountAction('advanceStatus')
+                ->assertActionDataSet([
+                    'occurred_at' => '2026-07-08 12:34:56',
+                ]);
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 
     public function test_view_page_status_timeline_is_ordered_by_occurred_at_descending(): void
