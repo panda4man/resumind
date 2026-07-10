@@ -104,6 +104,23 @@ class JobApplicationResourceTest extends TestCase
             ->assertSuccessful();
     }
 
+    public function test_job_application_view_page_shows_compensation_remote_status_and_formatted_description(): void
+    {
+        $application = JobApplication::factory()->create([
+            'job_description' => '<p>Build <strong>Laravel</strong> tools.</p>',
+            'remote' => true,
+            'salary_lower' => 120,
+            'salary_upper' => 160,
+        ]);
+
+        $this->get(JobApplicationResource::getUrl('view', ['record' => $application]))
+            ->assertSuccessful()
+            ->assertSee('Remote')
+            ->assertSee('$120k')
+            ->assertSee('$160k')
+            ->assertSee('<strong>Laravel</strong>', false);
+    }
+
     public function test_view_page_can_advance_status_and_sync_application_status(): void
     {
         $application = JobApplication::factory()->create([

@@ -64,8 +64,7 @@ class JobApplicationResource extends Resource
                         );
                     }),
                 Components\DatePicker::make('responded_at'),
-                Components\Textarea::make('job_description')
-                    ->rows(8)
+                Components\RichEditor::make('job_description')
                     ->columnSpanFull(),
 
                 Components\Section::make('Details')
@@ -153,10 +152,17 @@ class JobApplicationResource extends Resource
                             ->badge()
                             ->state(fn (JobApplication $record): string => $record->currentStatus()->value),
                         TextEntry::make('source'),
+                        TextEntry::make('remote')
+                            ->formatStateUsing(fn (?bool $state): string => $state ? 'Remote' : 'On-site'),
+                        TextEntry::make('salary_lower')
+                            ->formatStateUsing(fn (?int $state): ?string => $state ? "\${$state}k" : null),
+                        TextEntry::make('salary_upper')
+                            ->formatStateUsing(fn (?int $state): ?string => $state ? "\${$state}k" : null),
                         TextEntry::make('posted_at')->date(),
                         TextEntry::make('submitted_at')->dateTime(),
                         TextEntry::make('responded_at')->dateTime(),
                         TextEntry::make('job_description')
+                            ->html()
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
