@@ -10,5 +10,6 @@ enum InterviewFormatsEnum: string
     case GoogleMeet = 'google-meet';
     case InPerson = 'in-person';
     case CodingPlatform = 'coding-platform';
+    case AiInterview = 'ai-interview';
     case Other = 'other';
 }
